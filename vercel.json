@@ -1,0 +1,91 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "name": "multi-agent-learning-system",
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm ci",
+  "framework": "vite",
+  "public": false,
+  "regions": ["hkg1", "sfo1"],
+  
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "VITE_APP_VERSION": "@VERCEL_GIT_COMMIT_SHA",
+      "VITE_BUILD_TIMESTAMP": "@VERCEL_BUILD_TIMESTAMP"
+    }
+  },
+  
+  "env": {
+    "NODE_ENV": "production",
+    "VITE_DEBUG": "false",
+    "VITE_USE_MOCK_DATA": "true"
+  },
+  
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/not-implemented"
+    }
+  ],
+  
+  "redirects": [
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
+  
+  "trailingSlash": false,
+  
+  "cleanUrls": true,
+  
+  "functions": {
+    "app/api/**/*.js": {
+      "maxDuration": 30
+    }
+  },
+  
+  "crons": [],
+  
+  "github": {
+    "enabled": true,
+    "autoAlias": true,
+    "autoJobCancelation": true
+  }
+}

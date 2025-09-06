@@ -1,0 +1,134 @@
+# 多Agent学习系统 - Docker Compose配置
+# 支持开发环境和生产环境的容器编排
+
+version: '3.8'
+
+services:
+  # 前端应用服务
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: multi-agent-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # 生产环境不需要挂载源码
+      - nginx_logs:/var/log/nginx
+    networks:
+      - multi-agent-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  # 开发环境服务（可选）
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: multi-agent-frontend-dev
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - multi-agent-network
+    profiles:
+      - dev
+    command: npm run dev
+
+  # 未来的后端服务（预留）
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: multi-agent-backend
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - DATABASE_URL=postgresql://user:password@postgres:5432/multi_agent_db
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #     - JWT_SECRET=${JWT_SECRET}
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - multi-agent-network
+  #   restart: unless-stopped
+
+  # 数据库服务（预留）
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: multi-agent-postgres
+  #   environment:
+  #     - POSTGRES_DB=multi_agent_db
+  #     - POSTGRES_USER=user
+  #     - POSTGRES_PASSWORD=password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./migrations:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - multi-agent-network
+  #   restart: unless-stopped
+  #   profiles:
+  #     - backend
+
+  # Redis缓存服务（预留）
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: multi-agent-redis
+  #   command: redis-server --appendonly yes
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - multi-agent-network
+  #   restart: unless-stopped
+  #   profiles:
+  #     - backend
+
+  # 反向代理（可选）
+  # traefik:
+  #   image: traefik:v2.10
+  #   container_name: multi-agent-traefik
+  #   command:
+  #     - "--api.insecure=true"
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     - "--entrypoints.web.address=:80"
+  #   ports:
+  #     - "80:80"
+  #     - "8080:8080"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   networks:
+  #     - multi-agent-network
+  #   profiles:
+  #     - proxy
+
+networks:
+  multi-agent-network:
+    driver: bridge
+    name: multi-agent-network
+
+volumes:
+  nginx_logs:
+    name: multi-agent-nginx-logs
+  # postgres_data:
+  #   name: multi-agent-postgres-data
+  # redis_data:
+  #   name: multi-agent-redis-data

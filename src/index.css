@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 基础样式重置 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+/* 自定义组件样式 */
+@layer components {
+  /* 消息气泡样式 */
+  .message-bubble {
+    @apply relative p-4 rounded-xl max-w-3xl transition-all duration-200;
+  }
+  
+  .message-bubble-user {
+    @apply bg-message-user ml-auto;
+  }
+  
+  .message-bubble-assistant {
+    @apply bg-message-assistant border border-message-border;
+  }
+  
+  /* 悬停菜单样式 */
+  .hover-menu {
+    @apply absolute top-2 right-2 bg-white border border-gray-200 rounded-lg shadow-lg p-2 opacity-0 transition-opacity duration-200;
+  }
+  
+  .message-bubble:hover .hover-menu {
+    @apply opacity-100;
+  }
+  
+  /* 分支按钮样式 */
+  .branch-button {
+    @apply flex items-center gap-2 px-3 py-2 text-sm text-agent-branch hover:bg-gray-50 rounded-md transition-colors duration-200 cursor-pointer;
+  }
+  
+  /* 分支树面板样式 */
+  .branch-tree-panel {
+    @apply fixed top-4 right-4 w-80 bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-50;
+  }
+  
+  /* Agent切换器样式 */
+  .agent-switcher {
+    @apply flex items-center gap-2 px-4 py-2 bg-agent-main text-white rounded-lg hover:bg-agent-hover transition-colors duration-200 cursor-pointer;
+  }
+  
+  /* 对话界面布局 */
+  .chat-container {
+    @apply flex flex-col h-screen max-w-4xl mx-auto;
+  }
+  
+  .chat-header {
+    @apply flex items-center justify-between p-4 border-b border-gray-200 bg-white;
+  }
+  
+  .chat-messages {
+    @apply flex-1 overflow-y-auto p-4 space-y-4;
+  }
+  
+  .chat-input {
+    @apply border-t border-gray-200 p-4 bg-white;
+  }
+  
+  /* 输入框样式 */
+  .message-input {
+    @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-agent-main focus:border-transparent resize-none;
+  }
+  
+  /* 发送按钮样式 */
+  .send-button {
+    @apply px-6 py-3 bg-agent-main text-white rounded-lg hover:bg-agent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200;
+  }
+  
+  /* 加载动画 */
+  .loading-dots {
+    @apply flex space-x-1;
+  }
+  
+  .loading-dot {
+    @apply w-2 h-2 bg-gray-400 rounded-full animate-pulse;
+  }
+  
+  /* 树形结构样式 */
+  .tree-node {
+    @apply flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer transition-colors duration-200;
+  }
+  
+  .tree-node-active {
+    @apply bg-tree-active text-white;
+  }
+  
+  .tree-edge {
+    @apply w-px bg-tree-edge;
+  }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
