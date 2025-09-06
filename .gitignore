@@ -64,7 +64,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/ - 注释掉，因为我们需要 src/lib/ 目录
+# lib/
 lib64/
 parts/
 sdist/
