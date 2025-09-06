@@ -137,24 +137,42 @@ multi-agent-learning-system/
 ├── tsconfig.json            # TypeScript配置
 ├── .env.example             # 前端环境变量模板
 ├── src/                     # 前端源码目录
+│   ├── __tests__/           # 测试文件
+│   │   └── agentSlice.test.ts   # Agent状态测试
+│   ├── assets/             # 静态资源
+│   │   └── react.svg           # React图标
 │   ├── components/          # React组件
 │   │   ├── AgentSwitcher.tsx    # Agent切换器
 │   │   ├── BranchTreePanel.tsx  # 分支树面板
 │   │   ├── ChatInterface.tsx    # 聊天界面
+│   │   ├── Empty.tsx           # 空状态组件
 │   │   ├── ErrorBoundary.tsx    # 错误边界
 │   │   ├── LoadingSpinner.tsx   # 加载动画
+│   │   ├── MessageBubble.tsx    # 消息气泡组件
+│   │   ├── MindMapVisualization.tsx # 思维导图可视化
 │   │   ├── PerformanceMonitor.tsx # 性能监控
 │   │   ├── UserGuide.tsx        # 用户引导
 │   │   └── VirtualizedMessageList.tsx # 虚拟消息列表
-│   ├── store/              # Redux状态管理
-│   │   ├── agentSlice.ts       # Agent状态
-│   │   ├── chatSlice.ts        # 聊天状态
-│   │   ├── uiSlice.ts          # UI状态
-│   │   └── index.ts            # Store配置
+│   ├── hooks/              # 自定义Hooks
+│   │   └── useTheme.ts         # 主题Hook
+│   ├── lib/                # 工具库
+│   │   └── utils.ts            # 通用工具函数
 │   ├── pages/              # 页面组件
+│   │   ├── Home.tsx            # 首页组件
 │   │   └── HomePage.tsx        # 主页面
+│   ├── store/              # Redux状态管理
+│   │   ├── index.ts            # Store配置
+│   │   └── slices/             # 状态切片
+│   │       ├── agentSlice.ts       # Agent状态
+│   │       ├── chatSlice.ts        # 聊天状态
+│   │       └── uiSlice.ts          # UI状态
 │   ├── types/              # TypeScript类型定义
-│   └── utils/              # 工具函数
+│   │   └── index.ts            # 类型定义文件
+│   ├── App.css             # 应用样式
+│   ├── App.tsx             # 根组件
+│   ├── index.css           # 全局样式
+│   ├── main.tsx            # 应用入口
+│   └── vite-env.d.ts       # Vite类型声明
 ├── backend/                # 后端源码目录
 │   ├── app/                # FastAPI应用
 │   │   ├── main.py             # 应用入口
