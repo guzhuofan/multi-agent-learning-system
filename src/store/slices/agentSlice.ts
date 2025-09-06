@@ -41,6 +41,9 @@ export interface AgentNode {
   agentType: 'main' | 'branch';
   topic: string;
   level: number;
+  status: 'active' | 'suspended' | 'completed';
+  messageCount: number;
+  lastActivity?: string;
   children?: AgentNode[];
 }
 
@@ -195,6 +198,8 @@ const agentSlice = createSlice({
         agentType: agent.agentType,
         topic: agent.topic,
         level: agent.stackDepth,
+        status: agent.status,
+        messageCount: 0,
         children: [],
       };
       
@@ -351,6 +356,8 @@ const agentSlice = createSlice({
           agentType: agent.agentType,
           topic: agent.topic,
           level: 0,
+          status: agent.status,
+          messageCount: 0,
           children: [],
         };
         state.agentHierarchy.push(node);
@@ -378,6 +385,8 @@ const agentSlice = createSlice({
           agentType: agent.agentType,
           topic: agent.topic,
           level: agent.stackDepth,
+          status: agent.status,
+          messageCount: 0,
           children: [],
         };
         

@@ -78,7 +78,7 @@ const AgentItem: React.FC<AgentItemProps> = ({
           flex-shrink-0 p-1.5 rounded transition-colors
           ${agent.agentType === 'main' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}
         `}>
-          {getAgentIcon(agent.agentType)}
+          {getAgentIcon(agent.agentType, agent.stackDepth)}
         </div>
         
         <div className="flex-1 min-w-0">
@@ -144,7 +144,7 @@ const AgentItem: React.FC<AgentItemProps> = ({
           ${agent.agentType === 'main' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}
           ${isActive ? 'bg-blue-200 text-blue-800' : ''}
         `}>
-          {getAgentIcon(agent.agentType)}
+          {getAgentIcon(agent.agentType, agent.stackDepth)}
         </div>
         
         <div className="flex-1 min-w-0">
@@ -424,7 +424,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
     
     setShowCreateForm(false);
     setNewAgentTopic('');
-    setCreateType('main');
+    // setCreateType('main'); // 已注释，变量不存在
     setIsOpen(false);
     
     console.log('🔄 AgentSwitcher状态已重置');
@@ -469,7 +469,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
     setAgentToDelete(null);
   };
 
-  const getAgentIcon = (agentType: string) => {
+  const getAgentIcon = (agentType: string, stackDepth?: number) => {
     if (agentType === 'main') {
       return <Home className="w-4 h-4" />;
     }
@@ -518,7 +518,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
     // const tree: Array<{ agent: Agent; children: Agent[]; level: number }> = []; // 暂时注释，未使用
     
     // 递归构建子树
-    const buildSubtree = (parentId: string | null, level: number = 0): Array<{ agent: Agent; children: Agent[]; level: number }> => {
+    const buildSubtree = (parentId: string | null, level: number = 0): Array<{ agent: Agent; children: Array<{ agent: Agent; children: any[]; level: number }>; level: number }> => {
       return filteredAgents
         .filter(agent => agent.parentId === parentId)
         .sort((a, b) => {
@@ -531,6 +531,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
           }
           if (aRecentIndex !== -1) return -1;
           if (bRecentIndex !== -1) return 1;
+          
           
           // 按创建时间排序
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -549,10 +550,10 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
   };
   
   // 将树状结构扁平化为渲染列表
-  const flattenTree = (tree: Array<{ agent: Agent; children: Agent[]; level: number }>): Array<{ agent: Agent; level: number }> => {
+  const flattenTree = (tree: Array<{ agent: Agent; children: Array<{ agent: Agent; children: any[]; level: number }>; level: number }>): Array<{ agent: Agent; level: number }> => {
     const result: Array<{ agent: Agent; level: number }> = [];
     
-    const traverse = (nodes: Array<{ agent: Agent; children: Agent[]; level: number }>) => {
+    const traverse = (nodes: Array<{ agent: Agent; children: Array<{ agent: Agent; children: any[]; level: number }>; level: number }>) => {
       nodes.forEach(node => {
         result.push({ agent: node.agent, level: node.level });
         if (node.children.length > 0) {
@@ -577,7 +578,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
       >
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0 p-2 bg-blue-100 rounded-md">
-            {currentAgent ? getAgentIcon(currentAgent.agentType) : <Bot className="w-4 h-4" />}
+            {currentAgent ? getAgentIcon(currentAgent.agentType, currentAgent.stackDepth) : <Bot className="w-4 h-4" />}
           </div>
           <div className="flex-1 text-left">
             <div className="font-medium text-gray-900 truncate">
@@ -711,7 +712,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
                       onClick={() => {
                         setShowCreateForm(false);
                         setNewAgentTopic('');
-                        // setCreateType('main'); // 暂时注释，未使用
+                        // setCreateType('main'); // 已注释，变量不存在
                       }}
                       className="flex-1 px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors"
                     >

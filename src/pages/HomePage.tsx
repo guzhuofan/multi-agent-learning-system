@@ -24,7 +24,7 @@ import PerformanceMonitor from '../components/PerformanceMonitor';
 import UserGuide from '../components/UserGuide';
 import { TreePine, Settings, Menu, X, HelpCircle, Plus } from 'lucide-react';
 import type { Message } from '../store/slices/chatSlice';
-import type { Agent } from '../store/slices/agentSlice';
+import type { Agent, AgentNode } from '../store/slices/agentSlice';
 
 /**
  * HomePage组件 - 多Agent学习系统的主界面
@@ -51,10 +51,12 @@ const HomePage: React.FC = () => {
   
   // 本地UI状态
   const [showBranchTree, setShowBranchTree] = useState(false);
-  // const [showSettings, setShowSettings] = useState(false); // 暂时注释，未使用
+  const [showSettings, setShowSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
+
+
 
   /**
    * 同步Agent状态 - 确保前端Redux store与后端数据库一致
@@ -98,12 +100,12 @@ const HomePage: React.FC = () => {
           const agent: Agent = {
             id: agentData.id,
             sessionId: agentData.session_id,
-            agentType: agentData.agent_type,
+            agentType: agentData.agent_type as 'main' | 'branch',
             topic: agentData.topic,
             parentId: agentData.parent_id,
             stackDepth: agentData.stack_depth,
             contextData: agentData.context_data,
-            status: agentData.status,
+            status: agentData.status as 'active' | 'suspended' | 'completed',
             createdAt: agentData.created_at
           };
           syncedAgents[agent.id] = agent;
@@ -130,7 +132,7 @@ const HomePage: React.FC = () => {
       console.error('同步Agent状态失败:', error);
     }
     return null;
-  }, [dispatch, currentAgent, loadAgentMessages]);
+  }, [dispatch, currentAgent]);
 
   /**
    * 主Agent初始化逻辑
@@ -253,7 +255,7 @@ const HomePage: React.FC = () => {
     };
     
     initializeMainAgent();
-  }, [dispatch, syncAgentState, loadAgentMessages]); // 添加缺失的依赖项
+  }, [dispatch, syncAgentState]); // 添加缺失的依赖项
 
 
 
@@ -301,7 +303,7 @@ const HomePage: React.FC = () => {
         const existingMessageIds = new Set(existingMessages.map(msg => msg.id));
         
         // 将历史消息添加到Redux store（去重）
-        data.messages.forEach((msg: { id: string; agent_id: string; role: string; content: string; timestamp: string; metadata?: Record<string, unknown> }, index: number) => {
+        data.messages.forEach((msg: { id: string; agent_id: string; role: 'user' | 'assistant' | 'system'; content: string; timestamp: string; metadata?: Record<string, unknown> }, index: number) => {
           // 跳过已存在的消息
           if (existingMessageIds.has(msg.id)) {
             console.log(`⏭️ 跳过已存在的消息: ${msg.id}`);
