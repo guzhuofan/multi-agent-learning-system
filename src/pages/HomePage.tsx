@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
   
   // 本地UI状态
   const [showBranchTree, setShowBranchTree] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
@@ -255,7 +255,7 @@ const HomePage: React.FC = () => {
     };
     
     initializeMainAgent();
-  }, [dispatch, syncAgentState]); // 添加缺失的依赖项
+  }, [dispatch, syncAgentState, loadAgentMessages]); // 添加缺失的依赖项
 
 
 

@@ -469,7 +469,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
     setAgentToDelete(null);
   };
 
-  const getAgentIcon = (agentType: string, stackDepth?: number) => {
+  const getAgentIcon = (agentType: string) => {
     if (agentType === 'main') {
       return <Home className="w-4 h-4" />;
     }
@@ -518,7 +518,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
     // const tree: Array<{ agent: Agent; children: Agent[]; level: number }> = []; // 暂时注释，未使用
     
     // 递归构建子树
-    const buildSubtree = (parentId: string | null, level: number = 0): Array<{ agent: Agent; children: Array<{ agent: Agent; children: any[]; level: number }>; level: number }> => {
+    const buildSubtree = (parentId: string | null, level: number = 0): Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<any>; level: number }>; level: number }>; level: number }> => {
       return filteredAgents
         .filter(agent => agent.parentId === parentId)
         .sort((a, b) => {
@@ -550,10 +550,10 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
   };
   
   // 将树状结构扁平化为渲染列表
-  const flattenTree = (tree: Array<{ agent: Agent; children: Array<{ agent: Agent; children: any[]; level: number }>; level: number }>): Array<{ agent: Agent; level: number }> => {
+  const flattenTree = (tree: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<any>; level: number }>; level: number }>; level: number }>): Array<{ agent: Agent; level: number }> => {
     const result: Array<{ agent: Agent; level: number }> = [];
     
-    const traverse = (nodes: Array<{ agent: Agent; children: Array<{ agent: Agent; children: any[]; level: number }>; level: number }>) => {
+    const traverse = (nodes: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<any>; level: number }>; level: number }>; level: number }>) => {
       nodes.forEach(node => {
         result.push({ agent: node.agent, level: node.level });
         if (node.children.length > 0) {
@@ -578,7 +578,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
       >
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0 p-2 bg-blue-100 rounded-md">
-            {currentAgent ? getAgentIcon(currentAgent.agentType, currentAgent.stackDepth) : <Bot className="w-4 h-4" />}
+            {currentAgent ? getAgentIcon(currentAgent.agentType) : <Bot className="w-4 h-4" />}
           </div>
           <div className="flex-1 text-left">
             <div className="font-medium text-gray-900 truncate">
