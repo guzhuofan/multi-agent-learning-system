@@ -26,7 +26,7 @@ export interface Agent {
   agentType: 'main' | 'branch';
   topic: string;
   contextData: {
-    inheritedContext?: any;
+    inheritedContext?: Record<string, unknown>;
     systemPrompt?: string;
     temperature?: number;
   };
@@ -66,7 +66,7 @@ interface AgentState {
   // Agent层级结构
   agentHierarchy: AgentNode[];
   // 栈帧管理
-  activeFrames: Record<string, any>;
+  activeFrames: Record<string, unknown>;
   // 加载状态
   loading: {
     createAgent: boolean;

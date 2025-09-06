@@ -51,8 +51,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [branchTopic, setBranchTopic] = useState('');
   const [showAgentMenu, setShowAgentMenu] = useState(false);
-  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
-  const [branchCreationSuccess, setBranchCreationSuccess] = useState(false);
+  // const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null); // 暂时注释，未使用
+  // const [branchCreationSuccess, setBranchCreationSuccess] = useState(false); // 暂时注释，未使用
   const [isCreatingBranch, setIsCreatingBranch] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -79,9 +79,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       
       try {
         await onSendMessage(messageContent);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('发送消息失败:', error);
-        setError(error.message || '发送消息失败，请重试');
+        setError(error instanceof Error ? error.message : '发送消息失败，请重试');
       }
     }
   };
@@ -104,14 +104,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       setIsCreatingBranch(true);
       try {
         await onCreateBranch(selectedMessageId, branchTopic.trim());
-        setBranchCreationSuccess(true);
+        // setBranchCreationSuccess(true); // 暂时注释，未使用
         
         // 显示成功反馈
         setTimeout(() => {
           setShowBranchModal(false);
           setBranchTopic('');
           setSelectedMessageId(null);
-          setBranchCreationSuccess(false);
+          // setBranchCreationSuccess(false); // 暂时注释，未使用
           setIsCreatingBranch(false);
         }, 1500);
       } catch (error) {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Copy, GitBranch, Quote, MoreVertical } from 'lucide-react';
+import { Copy, GitBranch, Quote } from 'lucide-react';
 import type { Message } from '../store/slices/chatSlice';
 
 interface MessageBubbleProps {
@@ -18,8 +18,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   onCopyMessage,
   onQuoteMessage,
   showBranchButton = true,
-  isHighlighted = false,
-  agentTopic = ''
+  isHighlighted = false
+  // agentTopic = '' // 暂时注释，未使用
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [isCreatingBranch, setIsCreatingBranch] = useState(false);

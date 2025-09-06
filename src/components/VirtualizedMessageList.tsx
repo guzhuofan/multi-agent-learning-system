@@ -26,53 +26,53 @@ interface MessageItemProps {
   };
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ index, style, data }) => {
-  const {
-    messages,
-    onCreateBranch,
-    onCopyMessage,
-    onQuoteMessage,
-    currentAgentTopic,
-    highlightedMessageId
-  } = data;
-  
-  const message = messages[index];
-  
-  const handleCreateBranch = useCallback((messageId: string) => {
-    if (onCreateBranch) {
-      const topic = `关于 "${message.content.slice(0, 30)}..." 的深入探讨`;
-      onCreateBranch(messageId, topic);
-    }
-  }, [message.content, onCreateBranch]);
-  
-  const handleCopyMessage = useCallback((content: string) => {
-    if (onCopyMessage) {
-      onCopyMessage(content);
-    } else {
-      navigator.clipboard.writeText(content);
-    }
-  }, [onCopyMessage]);
-  
-  const handleQuoteMessage = useCallback((content: string) => {
-    if (onQuoteMessage) {
-      onQuoteMessage(content);
-    }
-  }, [onQuoteMessage]);
-  
-  return (
-    <div style={style} className="px-6 py-3">
-      <MessageBubble
-        message={message}
-        onCreateBranch={handleCreateBranch}
-        onCopyMessage={handleCopyMessage}
-        onQuoteMessage={handleQuoteMessage}
-        showBranchButton={message.role === 'assistant'}
-        isHighlighted={highlightedMessageId === message.id}
-        agentTopic={currentAgentTopic || ''}
-      />
-    </div>
-  );
-};
+// const MessageItem: React.FC<MessageItemProps> = ({ index, style, data }) => { // 暂时注释，未使用
+//   const {
+//     messages,
+//     onCreateBranch,
+//     onCopyMessage,
+//     onQuoteMessage,
+//     currentAgentTopic,
+//     highlightedMessageId
+//   } = data;
+//   
+//   const message = messages[index];
+//   
+//   const handleCreateBranch = useCallback((messageId: string) => {
+//     if (onCreateBranch) {
+//       const topic = `关于 "${message.content.slice(0, 30)}..." 的深入探讨`;
+//       onCreateBranch(messageId, topic);
+//     }
+//   }, [message.content, onCreateBranch]);
+//   
+//   const handleCopyMessage = useCallback((content: string) => {
+//     if (onCopyMessage) {
+//       onCopyMessage(content);
+//     } else {
+//       navigator.clipboard.writeText(content);
+//     }
+//   }, [onCopyMessage]);
+//   
+//   const handleQuoteMessage = useCallback((content: string) => {
+//     if (onQuoteMessage) {
+//       onQuoteMessage(content);
+//     }
+//   }, [onQuoteMessage]);
+//   
+//   return (
+//     <div style={style} className="px-6 py-3">
+//       <MessageBubble
+//         message={message}
+//         onCreateBranch={handleCreateBranch}
+//         onCopyMessage={handleCopyMessage}
+//         onQuoteMessage={handleQuoteMessage}
+//         showBranchButton={message.role === 'assistant'}
+//         isHighlighted={highlightedMessageId === message.id}
+//         agentTopic={currentAgentTopic || ''}
+//       />
+//     </div>
+//   );
+// }; // 暂时注释，未使用
 
 const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({
   messages,
@@ -83,29 +83,29 @@ const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({
   currentAgentTopic,
   highlightedMessageId
 }) => {
-  const itemData = useMemo(() => ({
-    messages,
-    onCreateBranch,
-    onCopyMessage,
-    onQuoteMessage,
-    currentAgentTopic,
-    highlightedMessageId
-  }), [
-    messages,
-    onCreateBranch,
-    onCopyMessage,
-    onQuoteMessage,
-    currentAgentTopic,
-    highlightedMessageId
-  ]);
+  // const itemData = useMemo(() => ({ // 暂时注释，未使用
+  //   messages,
+  //   onCreateBranch,
+  //   onCopyMessage,
+  //   onQuoteMessage,
+  //   currentAgentTopic,
+  //   highlightedMessageId
+  // }), [
+  //   messages,
+  //   onCreateBranch,
+  //   onCopyMessage,
+  //   onQuoteMessage,
+  //   currentAgentTopic,
+  //   highlightedMessageId
+  // ]);
   
   // 动态计算消息高度（简化版本，实际可以更精确）
-  const getItemSize = useCallback((index: number) => {
-    const message = messages[index];
-    const baseHeight = 80; // 基础高度
-    const contentLines = Math.ceil(message.content.length / 50); // 估算行数
-    return Math.max(baseHeight, contentLines * 20 + 60);
-  }, [messages]);
+  // const getItemSize = useCallback((index: number) => { // 暂时注释，未使用
+  //   const message = messages[index];
+  //   const baseHeight = 80; // 基础高度
+  //   const contentLines = Math.ceil(message.content.length / 50); // 估算行数
+  //   return Math.max(baseHeight, contentLines * 20 + 60);
+  // }, [messages]);
   
   if (messages.length === 0) {
     return (
@@ -127,7 +127,7 @@ const VirtualizedMessageList: React.FC<VirtualizedMessageListProps> = ({
   // 临时禁用虚拟滚动，直接渲染所有消息
   return (
     <div className="flex-1 overflow-y-auto" style={{ height: 600 }}>
-      {messages.map((message, index) => (
+      {messages.map((message) => (
         <div key={message.id} style={{ height: 120 }}>
           <MessageBubble
             message={message}

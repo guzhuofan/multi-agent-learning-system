@@ -4,7 +4,6 @@ import { RootState } from '../store';
 import { setCurrentAgent, addAgent } from '../store/slices/agentSlice';
 import { 
   ChevronDown, 
-  Plus, 
   Bot, 
   GitBranch, 
   Home, 
@@ -287,7 +286,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
   );
 };
 
-const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateMainAgent, onRenameAgent, onDeleteAgent }) => {
+const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRenameAgent, onDeleteAgent }) => {
   const dispatch = useDispatch();
   const { currentAgentId, agents } = useSelector((state: RootState) => state.agent);
   const currentAgent = currentAgentId ? agents[currentAgentId] : null;
@@ -296,7 +295,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateM
   const [newAgentTopic, setNewAgentTopic] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [recentAgents, setRecentAgents] = useState<string[]>([]);
-  const [createType, setCreateType] = useState<'main' | 'branch'>('branch');
+  // const [createType, setCreateType] = useState<'main' | 'branch'>('branch'); // 暂时注释，未使用
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -365,7 +364,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateM
           console.log('重新获取的Agent列表:', agentsData);
           
           // 查找匹配的Agent或使用第一个可用的Agent
-          const validAgent = agentsData.find((a: any) => a.id === agent.id) || agentsData[0];
+          const validAgent = agentsData.find((a: Agent) => a.id === agent.id) || agentsData[0];
           if (validAgent) {
             const syncedAgent: Agent = {
               id: validAgent.id,
@@ -470,7 +469,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateM
     setAgentToDelete(null);
   };
 
-  const getAgentIcon = (agentType: string, stackDepth: number) => {
+  const getAgentIcon = (agentType: string, _stackDepth: number) => {
     if (agentType === 'main') {
       return <Home className="w-4 h-4" />;
     }
@@ -515,11 +514,11 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateM
     );
     
     // 构建树状结构
-    const agentMap = new Map(filteredAgents.map(agent => [agent.id, agent]));
-    const tree: Array<{ agent: Agent; children: any[]; level: number }> = [];
+    // const agentMap = new Map(filteredAgents.map(agent => [agent.id, agent])); // 暂时注释，未使用
+    // const tree: Array<{ agent: Agent; children: Agent[]; level: number }> = []; // 暂时注释，未使用
     
     // 递归构建子树
-    const buildSubtree = (parentId: string | null, level: number = 0): any[] => {
+    const buildSubtree = (parentId: string | null, level: number = 0): Array<{ agent: Agent; children: Agent[]; level: number }> => {
       return filteredAgents
         .filter(agent => agent.parentId === parentId)
         .sort((a, b) => {
@@ -550,10 +549,10 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateM
   };
   
   // 将树状结构扁平化为渲染列表
-  const flattenTree = (tree: any[]): Array<{ agent: Agent; level: number }> => {
+  const flattenTree = (tree: Array<{ agent: Agent; children: Agent[]; level: number }>): Array<{ agent: Agent; level: number }> => {
     const result: Array<{ agent: Agent; level: number }> = [];
     
-    const traverse = (nodes: any[]) => {
+    const traverse = (nodes: Array<{ agent: Agent; children: Agent[]; level: number }>) => {
       nodes.forEach(node => {
         result.push({ agent: node.agent, level: node.level });
         if (node.children.length > 0) {
@@ -664,7 +663,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateM
                 <button
                   onClick={() => {
                     setShowCreateForm(true);
-                    setCreateType('main');
+                    // setCreateType('main'); // 暂时注释，未使用
                   }}
                   className="w-full flex items-center space-x-3 px-3 py-2 text-left hover:bg-gray-50 transition-colors text-green-600"
                 >
@@ -712,7 +711,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateBranch, onCreateM
                       onClick={() => {
                         setShowCreateForm(false);
                         setNewAgentTopic('');
-                        setCreateType('main');
+                        // setCreateType('main'); // 暂时注释，未使用
                       }}
                       className="flex-1 px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors"
                     >

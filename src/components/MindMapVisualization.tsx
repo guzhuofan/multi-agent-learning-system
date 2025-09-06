@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Target, GitBranch, Zap, Clock, MessageCircle } from 'lucide-react';
+import { Target, GitBranch, Clock, MessageCircle } from 'lucide-react';
 
 interface AgentNode {
   id: string;
@@ -33,7 +33,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
   agentHierarchy,
   currentAgentId,
   onSwitchAgent,
-  onDeleteAgent,
+  // onDeleteAgent, // 暂时注释，未使用
   width = 800,
   height = 600,
   showLegend = true
@@ -67,6 +67,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
       processedNodes.add(node.id);
       
       const nodeRadius = node.agentType === 'main' ? 35 : 25; // 稍微减小节点大小
+      // const radius = nodeRadius; // 暂时注释，未使用
       
       const mindMapNode: MindMapNode = {
         ...node,
@@ -152,7 +153,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
   useEffect(() => {
     const newNodes = calculateNodePositions(agentHierarchy);
     setNodes(newNodes);
-  }, [agentHierarchy, width, height]);
+  }, [agentHierarchy, width, height, calculateNodePositions]);
 
   /**
    * 获取节点颜色

@@ -267,7 +267,7 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.sending = false;
-        const { userMessage, assistantMessage } = action.payload;
+        const { assistantMessage } = action.payload;
         
         // 添加助手回复
         if (!state.messagesByAgent[assistantMessage.agentId]) {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, Target, GitBranch, X, Trash2, MoreVertical, Grid, Grid3x3, List } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronRight, ChevronDown, Target, GitBranch, X, Trash2, Grid3x3, List } from 'lucide-react';
 import MindMapVisualization from './MindMapVisualization';
 
 interface AgentNode {

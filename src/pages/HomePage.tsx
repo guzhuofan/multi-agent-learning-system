@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
   
   // 本地UI状态
   const [showBranchTree, setShowBranchTree] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  // const [showSettings, setShowSettings] = useState(false); // 暂时注释，未使用
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
@@ -67,7 +67,17 @@ const HomePage: React.FC = () => {
         console.log('同步Agent状态，后端Agent列表:', agentsData);
         
         // 处理后端返回的数据格式
-        let agentsList: any[] = [];
+        let agentsList: Array<{
+          id: string;
+          session_id: string;
+          agent_type: string;
+          topic: string;
+          parent_id?: string;
+          stack_depth: number;
+          context_data: Record<string, unknown>;
+          status: string;
+          created_at: string;
+        }> = [];
         if (Array.isArray(agentsData)) {
           agentsList = agentsData;
         } else if (agentsData && Array.isArray(agentsData.agents)) {
@@ -84,7 +94,7 @@ const HomePage: React.FC = () => {
         
         // 清空现有Agent状态并重新加载
         const syncedAgents: Record<string, Agent> = {};
-        agentsList.forEach((agentData: any) => {
+        agentsList.forEach((agentData) => {
           const agent: Agent = {
             id: agentData.id,
             sessionId: agentData.session_id,
@@ -102,7 +112,7 @@ const HomePage: React.FC = () => {
         
         // 如果当前Agent不存在或无效，切换到第一个可用的Agent
         if (!currentAgent || !syncedAgents[currentAgent.id]) {
-          const mainAgent = agentsList.find((a: any) => a.agent_type === 'main');
+          const mainAgent = agentsList.find((a) => a.agent_type === 'main');
           if (mainAgent) {
             dispatch(setCurrentAgent(mainAgent.id));
             await loadAgentMessages(mainAgent.id);
@@ -291,7 +301,7 @@ const HomePage: React.FC = () => {
         const existingMessageIds = new Set(existingMessages.map(msg => msg.id));
         
         // 将历史消息添加到Redux store（去重）
-        data.messages.forEach((msg: any, index: number) => {
+        data.messages.forEach((msg: { id: string; agent_id: string; role: string; content: string; timestamp: string; metadata?: Record<string, unknown> }, index: number) => {
           // 跳过已存在的消息
           if (existingMessageIds.has(msg.id)) {
             console.log(`⏭️ 跳过已存在的消息: ${msg.id}`);
@@ -377,7 +387,7 @@ const HomePage: React.FC = () => {
    * 4. 调用后端API获取AI回复
    * 5. 添加AI回复消息到对应Agent的消息历史
    */
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = useCallback(async (content: string) => {
     if (!currentAgent) {
       console.error('当前没有选中的Agent');
       return;
@@ -496,7 +506,7 @@ const HomePage: React.FC = () => {
       
       dispatch(addAssistantMessage(errorMessage));
     }
-  };
+  }, [currentAgent, dispatch, validateAgentId, addAgent, setCurrentAgent, addAssistantMessage, addUserMessage]);
 
   /**
    * 处理分支创建
@@ -674,7 +684,7 @@ const HomePage: React.FC = () => {
       
       console.log('⚠️ 创建临时主Agent（离线模式）:', tempMainAgent);
     }
-  }, [dispatch]);
+  }, [dispatch, agents]);
 
   /**
    * 重命名Agent
@@ -831,7 +841,7 @@ const HomePage: React.FC = () => {
       // 可以在这里添加用户提示
       alert(`删除失败: ${error instanceof Error ? error.message : '未知错误'}`);
     }
-  }, [currentAgent, dispatch, loadAgentMessages, agents, addAgent, setCurrentAgent]);
+  }, [currentAgent, dispatch, loadAgentMessages, agents]);
 
   /**
    * 创建新的主对话（保留原有功能）
@@ -1027,8 +1037,8 @@ const HomePage: React.FC = () => {
      });
      
      // 强制垃圾回收（如果浏览器支持）
-     if ((window as any).gc) {
-       (window as any).gc();
+     if ((window as { gc?: () => void }).gc) {
+       (window as { gc?: () => void }).gc();
        console.log('🗑️ 已执行垃圾回收');
      }
      
@@ -1088,10 +1098,10 @@ const HomePage: React.FC = () => {
    * 
    * @returns AgentNode[] - 构建好的Agent树状结构
    */
-  const buildAgentHierarchy = (): any[] => {
+  const buildAgentHierarchy = (): AgentNode[] => {
     const agentList = Object.values(agents);
     const agentMap = new Map();
-    const rootNodes: any[] = [];
+    const rootNodes: AgentNode[] = [];
 
     // 转换Agent为AgentNode格式
     agentList.forEach(agent => {
@@ -1122,7 +1132,7 @@ const HomePage: React.FC = () => {
     });
 
     // 递归排序子节点（按创建时间）
-    const sortChildren = (nodes: any[]) => {
+    const sortChildren = (nodes: AgentNode[]) => {
       nodes.sort((a, b) => new Date(a.lastActivity || '').getTime() - new Date(b.lastActivity || '').getTime());
       nodes.forEach(node => {
         if (node.children.length > 0) {
@@ -1216,7 +1226,7 @@ const HomePage: React.FC = () => {
             <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-50 rounded">
               <div>Agents: {Object.keys(agents).length}</div>
               <div>Messages: {Object.values(messagesByAgent).reduce((total, msgs) => total + msgs.length, 0)}</div>
-              <div>Memory: {((performance as any).memory?.usedJSHeapSize / 1024 / 1024 || 0).toFixed(1)}MB</div>
+              <div>Memory: {((performance as { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize / 1024 / 1024 || 0).toFixed(1)}MB</div>
             </div>
           </div>
         </div>

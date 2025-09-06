@@ -36,7 +36,7 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   // 性能监控
   const updatePerformanceStats = useCallback(() => {
     const now = Date.now();
-    const memory = (performance as any).memory;
+    const memory = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory;
     
     const newStats: PerformanceStats = {
       memoryUsage: memory ? memory.usedJSHeapSize / 1024 / 1024 : 0,
@@ -194,8 +194,8 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
             <button
               onClick={() => {
                 // 强制垃圾回收（如果浏览器支持）
-                if ((window as any).gc) {
-                  (window as any).gc();
+                if ((window as Window & { gc?: () => void }).gc) {
+                  (window as Window & { gc?: () => void }).gc();
                 }
                 updatePerformanceStats();
               }}
