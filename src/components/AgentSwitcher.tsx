@@ -492,8 +492,15 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
     }
   };
   
+  // 定义Agent节点类型
+  interface AgentNode {
+    agent: Agent;
+    children: AgentNode[];
+    level: number;
+  }
+
   // 构建Agent树状结构
-  const buildAgentTree = () => {
+  const buildAgentTree = (): AgentNode[] => {
     const agentList = Object.values(agents);
     
     // 使用Map去重，确保每个Agent只显示一次
@@ -513,12 +520,8 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
       agent.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
     
-    // 构建树状结构
-    // const agentMap = new Map(filteredAgents.map(agent => [agent.id, agent])); // 暂时注释，未使用
-    // const tree: Array<{ agent: Agent; children: Agent[]; level: number }> = []; // 暂时注释，未使用
-    
     // 递归构建子树
-    const buildSubtree = (parentId: string | null, level: number = 0): Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<any>; level: number }>; level: number }>; level: number }> => {
+    const buildSubtree = (parentId: string | null, level: number = 0): AgentNode[] => {
       return filteredAgents
         .filter(agent => agent.parentId === parentId)
         .sort((a, b) => {
@@ -550,10 +553,10 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
   };
   
   // 将树状结构扁平化为渲染列表
-  const flattenTree = (tree: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<any>; level: number }>; level: number }>; level: number }>): Array<{ agent: Agent; level: number }> => {
+  const flattenTree = (tree: AgentNode[]): Array<{ agent: Agent; level: number }> => {
     const result: Array<{ agent: Agent; level: number }> = [];
     
-    const traverse = (nodes: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<{ agent: Agent; children: Array<any>; level: number }>; level: number }>; level: number }>) => {
+    const traverse = (nodes: AgentNode[]) => {
       nodes.forEach(node => {
         result.push({ agent: node.agent, level: node.level });
         if (node.children.length > 0) {

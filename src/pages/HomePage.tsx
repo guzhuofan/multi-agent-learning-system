@@ -51,12 +51,74 @@ const HomePage: React.FC = () => {
   
   // 本地UI状态
   const [showBranchTree, setShowBranchTree] = useState(false);
-  const [showSettings] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showUserGuide, setShowUserGuide] = useState(false);
 
-
+  /**
+   * 加载Agent的历史消息
+   * 
+   * @param agentId - Agent ID
+   */
+  const loadAgentMessages = useCallback(async (agentId: string) => {
+    console.log(`🔄 开始加载Agent ${agentId} 的历史消息`);
+    
+    // 特殊调试：宪法式AI agent
+    if (agentId === 'e407f16b-662e-4ee1-8485-bd7e17fbcb9b') {
+      console.log('🏛️ 正在加载宪法式AI agent的消息...');
+      console.log('🏛️ API URL:', `http://localhost:8000/api/v1/chat/conversation/${agentId}`);
+    }
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/chat/conversation/${agentId}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`📨 从后端获取到 ${data.messages.length} 条历史消息:`, data.messages);
+        
+        // 检查Redux中是否已有消息，避免重复添加
+        const existingMessages = messagesByAgent[agentId] || [];
+        console.log(`🔍 Redux中已有 ${existingMessages.length} 条消息`);
+        const existingMessageIds = new Set(existingMessages.map(msg => msg.id));
+        
+        // 将历史消息添加到Redux store（去重）
+        data.messages.forEach((msg: { id: string; agent_id: string; role: 'user' | 'assistant' | 'system'; content: string; timestamp: string; metadata?: Record<string, unknown> }, index: number) => {
+          // 跳过已存在的消息
+          if (existingMessageIds.has(msg.id)) {
+            console.log(`⏭️ 跳过已存在的消息: ${msg.id}`);
+            return;
+          }
+          
+          const message = {
+            id: msg.id,
+            agentId: msg.agent_id,
+            role: msg.role,
+            content: msg.content,
+            timestamp: msg.timestamp,
+            metadata: msg.metadata || {}
+          };
+          
+          console.log(`📝 处理消息 ${index + 1}/${data.messages.length}:`, {
+            id: msg.id,
+            role: msg.role,
+            content: msg.content.substring(0, 50) + '...',
+            agentId: msg.agent_id
+          });
+          
+          if (msg.role === 'user') {
+            dispatch(addUserMessage({ agentId: msg.agent_id, content: msg.content, messageId: msg.id, timestamp: msg.timestamp }));
+          } else {
+            dispatch(addAssistantMessage(message));
+          }
+        });
+        
+        console.log(`✅ Agent ${agentId} 历史消息加载完成`);
+      } else {
+        console.error(`❌ 获取历史消息失败: HTTP ${response.status}`);
+      }
+    } catch (error) {
+      console.error('❌ 加载Agent历史消息失败:', error);
+    }
+  }, [messagesByAgent, dispatch]);
 
   /**
    * 同步Agent状态 - 确保前端Redux store与后端数据库一致
@@ -132,7 +194,7 @@ const HomePage: React.FC = () => {
       console.error('同步Agent状态失败:', error);
     }
     return null;
-  }, [dispatch, currentAgent]);
+  }, [dispatch, currentAgent, loadAgentMessages]);
 
   /**
    * 主Agent初始化逻辑
@@ -277,70 +339,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  /**
-   * 加载Agent的历史消息
-   * 
-   * @param agentId - Agent ID
-   */
-  const loadAgentMessages = useCallback(async (agentId: string) => {
-    console.log(`🔄 开始加载Agent ${agentId} 的历史消息`);
-    
-    // 特殊调试：宪法式AI agent
-    if (agentId === 'e407f16b-662e-4ee1-8485-bd7e17fbcb9b') {
-      console.log('🏛️ 正在加载宪法式AI agent的消息...');
-      console.log('🏛️ API URL:', `http://localhost:8000/api/v1/chat/conversation/${agentId}`);
-    }
-    
-    try {
-      const response = await fetch(`http://localhost:8000/api/v1/chat/conversation/${agentId}`);
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`📨 从后端获取到 ${data.messages.length} 条历史消息:`, data.messages);
-        
-        // 检查Redux中是否已有消息，避免重复添加
-        const existingMessages = messagesByAgent[agentId] || [];
-        console.log(`🔍 Redux中已有 ${existingMessages.length} 条消息`);
-        const existingMessageIds = new Set(existingMessages.map(msg => msg.id));
-        
-        // 将历史消息添加到Redux store（去重）
-        data.messages.forEach((msg: { id: string; agent_id: string; role: 'user' | 'assistant' | 'system'; content: string; timestamp: string; metadata?: Record<string, unknown> }, index: number) => {
-          // 跳过已存在的消息
-          if (existingMessageIds.has(msg.id)) {
-            console.log(`⏭️ 跳过已存在的消息: ${msg.id}`);
-            return;
-          }
-          
-          const message = {
-            id: msg.id,
-            agentId: msg.agent_id,
-            role: msg.role,
-            content: msg.content,
-            timestamp: msg.timestamp,
-            metadata: msg.metadata || {}
-          };
-          
-          console.log(`📝 处理消息 ${index + 1}/${data.messages.length}:`, {
-            id: msg.id,
-            role: msg.role,
-            content: msg.content.substring(0, 50) + '...',
-            agentId: msg.agent_id
-          });
-          
-          if (msg.role === 'user') {
-            dispatch(addUserMessage({ agentId: msg.agent_id, content: msg.content, messageId: msg.id, timestamp: msg.timestamp }));
-          } else {
-            dispatch(addAssistantMessage(message));
-          }
-        });
-        
-        console.log(`✅ Agent ${agentId} 历史消息加载完成`);
-      } else {
-        console.error(`❌ 获取历史消息失败: HTTP ${response.status}`);
-      }
-    } catch (error) {
-      console.error('❌ 加载Agent历史消息失败:', error);
-    }
-  }, [messagesByAgent, dispatch]);
+
 
   /**
    * 处理Agent切换
@@ -686,7 +685,7 @@ const HomePage: React.FC = () => {
       
       console.log('⚠️ 创建临时主Agent（离线模式）:', tempMainAgent);
     }
-  }, [dispatch]);
+  }, [dispatch, agents]);
 
   /**
    * 重命名Agent
@@ -1207,7 +1206,7 @@ const HomePage: React.FC = () => {
           {/* 侧边栏底部 */}
           <div className="p-4 border-t border-gray-200 space-y-2">
             <button
-              onClick={() => setShowSettings(true)}
+              onClick={() => console.log('设置功能待实现')}
               className="flex items-center w-full p-2 text-left text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
             >
               <Settings className="w-4 h-4 mr-3" />
