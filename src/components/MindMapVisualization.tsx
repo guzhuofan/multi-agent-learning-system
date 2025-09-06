@@ -57,8 +57,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
       x: number, 
       y: number, 
       level: number, 
-      angle: number = 0, 
-      radius: number = 0
+      angle: number = 0
     ) => {
       // 避免重复处理同一个节点
       if (processedNodes.has(node.id)) {
@@ -86,7 +85,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
           // 单个子节点：直接向右或向下
           const childX = Math.min(width - 60, x + 80);
           const childY = y;
-          processNode(node.children[0], childX, childY, level + 1, 0, 80);
+          processNode(node.children[0], childX, childY, level + 1, 0);
         } else if (childCount <= 4) {
           // 少量子节点：使用扇形布局
           const baseRadius = Math.min(70, (width - 100) / 3);
@@ -98,7 +97,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
             const childAngle = startAngle + index * angleStep;
             const childX = Math.max(40, Math.min(width - 40, x + Math.cos(childAngle) * baseRadius));
             const childY = Math.max(40, Math.min(height - 40, y + Math.sin(childAngle) * baseRadius));
-            processNode(child, childX, childY, level + 1, childAngle, baseRadius);
+            processNode(child, childX, childY, level + 1, childAngle);
           });
         } else {
           // 大量子节点：使用圆形布局
@@ -109,7 +108,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
             const childAngle = angle + index * angleStep;
             const childX = Math.max(40, Math.min(width - 40, x + Math.cos(childAngle) * baseRadius));
             const childY = Math.max(40, Math.min(height - 40, y + Math.sin(childAngle) * baseRadius));
-            processNode(child, childX, childY, level + 1, childAngle, baseRadius);
+            processNode(child, childX, childY, level + 1, childAngle);
           });
         }
       }
@@ -132,7 +131,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
           const angle = (index + 1) * (Math.PI * 2) / (mainNodes.length);
           const x = centerX + Math.cos(angle) * 100;
           const y = centerY + Math.sin(angle) * 100;
-          processNode(node, x, y, 0, angle, 100);
+          processNode(node, x, y, 0, angle);
         });
       }
       
@@ -141,7 +140,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
         const angle = (index * Math.PI * 2) / branchNodes.length;
         const x = centerX + Math.cos(angle) * 80;
         const y = centerY + Math.sin(angle) * 80;
-        processNode(node, x, y, 1, angle, 80);
+        processNode(node, x, y, 1, angle);
       });
     }
 

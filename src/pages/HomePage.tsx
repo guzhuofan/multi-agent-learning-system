@@ -130,7 +130,7 @@ const HomePage: React.FC = () => {
       console.error('同步Agent状态失败:', error);
     }
     return null;
-  }, [dispatch, currentAgent, addAgent, setCurrentAgent, loadAgentMessages]);
+  }, [dispatch, currentAgent, loadAgentMessages]);
 
   /**
    * 主Agent初始化逻辑
@@ -338,7 +338,7 @@ const HomePage: React.FC = () => {
     } catch (error) {
       console.error('❌ 加载Agent历史消息失败:', error);
     }
-  }, [messagesByAgent, dispatch, addUserMessage, addAssistantMessage]);
+  }, [messagesByAgent, dispatch]);
 
   /**
    * 处理Agent切换
@@ -506,7 +506,7 @@ const HomePage: React.FC = () => {
       
       dispatch(addAssistantMessage(errorMessage));
     }
-  }, [currentAgent, dispatch, addAgent, setCurrentAgent, addAssistantMessage, addUserMessage]);
+  }, [currentAgent, dispatch]);
 
   /**
    * 处理分支创建
