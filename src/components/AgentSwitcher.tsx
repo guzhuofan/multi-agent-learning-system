@@ -78,7 +78,7 @@ const AgentItem: React.FC<AgentItemProps> = ({
           flex-shrink-0 p-1.5 rounded transition-colors
           ${agent.agentType === 'main' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}
         `}>
-          {getAgentIcon(agent.agentType, agent.stackDepth)}
+          {getAgentIcon(agent.agentType)}
         </div>
         
         <div className="flex-1 min-w-0">
@@ -144,7 +144,7 @@ const AgentItem: React.FC<AgentItemProps> = ({
           ${agent.agentType === 'main' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}
           ${isActive ? 'bg-blue-200 text-blue-800' : ''}
         `}>
-          {getAgentIcon(agent.agentType, agent.stackDepth)}
+          {getAgentIcon(agent.agentType)}
         </div>
         
         <div className="flex-1 min-w-0">
@@ -469,7 +469,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
     setAgentToDelete(null);
   };
 
-  const getAgentIcon = (agentType: string, _stackDepth: number) => {
+  const getAgentIcon = (agentType: string) => {
     if (agentType === 'main') {
       return <Home className="w-4 h-4" />;
     }
@@ -577,7 +577,7 @@ const AgentSwitcher: React.FC<AgentSwitcherProps> = ({ onCreateMainAgent, onRena
       >
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0 p-2 bg-blue-100 rounded-md">
-            {currentAgent ? getAgentIcon(currentAgent.agentType, currentAgent.stackDepth) : <Bot className="w-4 h-4" />}
+            {currentAgent ? getAgentIcon(currentAgent.agentType) : <Bot className="w-4 h-4" />}
           </div>
           <div className="flex-1 text-left">
             <div className="font-medium text-gray-900 truncate">

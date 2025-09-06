@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Target, GitBranch, Clock, MessageCircle } from 'lucide-react';
 
 interface AgentNode {
@@ -46,7 +46,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
   /**
    * 计算节点位置 - 使用改进的径向布局算法
    */
-  const calculateNodePositions = (hierarchy: AgentNode[]): MindMapNode[] => {
+  const calculateNodePositions = useCallback((hierarchy: AgentNode[]): MindMapNode[] => {
     const centerX = width / 2;
     const centerY = height / 2;
     const mindMapNodes: MindMapNode[] = [];
@@ -67,7 +67,6 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
       processedNodes.add(node.id);
       
       const nodeRadius = node.agentType === 'main' ? 35 : 25; // 稍微减小节点大小
-      // const radius = nodeRadius; // 暂时注释，未使用
       
       const mindMapNode: MindMapNode = {
         ...node,
@@ -147,7 +146,7 @@ const MindMapVisualization: React.FC<MindMapVisualizationProps> = ({
     }
 
     return mindMapNodes;
-  };
+  }, [width, height]);
 
   // 当层级数据变化时重新计算节点位置
   useEffect(() => {

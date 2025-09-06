@@ -59,7 +59,7 @@ const HomePage: React.FC = () => {
   /**
    * 同步Agent状态 - 确保前端Redux store与后端数据库一致
    */
-  const syncAgentState = async () => {
+  const syncAgentState = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:8000/api/v1/agents/');
       if (response.ok) {
@@ -130,7 +130,7 @@ const HomePage: React.FC = () => {
       console.error('同步Agent状态失败:', error);
     }
     return null;
-  };
+  }, [dispatch, currentAgent, addAgent, setCurrentAgent, loadAgentMessages]);
 
   /**
    * 主Agent初始化逻辑
@@ -253,7 +253,7 @@ const HomePage: React.FC = () => {
     };
     
     initializeMainAgent();
-  }, [dispatch]); // 移除agents和currentAgent依赖，避免无限循环
+  }, [dispatch, syncAgentState, loadAgentMessages]); // 添加缺失的依赖项
 
 
 
@@ -280,7 +280,7 @@ const HomePage: React.FC = () => {
    * 
    * @param agentId - Agent ID
    */
-  const loadAgentMessages = async (agentId: string) => {
+  const loadAgentMessages = useCallback(async (agentId: string) => {
     console.log(`🔄 开始加载Agent ${agentId} 的历史消息`);
     
     // 特殊调试：宪法式AI agent
@@ -338,7 +338,7 @@ const HomePage: React.FC = () => {
     } catch (error) {
       console.error('❌ 加载Agent历史消息失败:', error);
     }
-  };
+  }, [messagesByAgent, dispatch, addUserMessage, addAssistantMessage]);
 
   /**
    * 处理Agent切换
@@ -506,7 +506,7 @@ const HomePage: React.FC = () => {
       
       dispatch(addAssistantMessage(errorMessage));
     }
-  }, [currentAgent, dispatch, validateAgentId, addAgent, setCurrentAgent, addAssistantMessage, addUserMessage]);
+  }, [currentAgent, dispatch, addAgent, setCurrentAgent, addAssistantMessage, addUserMessage]);
 
   /**
    * 处理分支创建
@@ -684,7 +684,7 @@ const HomePage: React.FC = () => {
       
       console.log('⚠️ 创建临时主Agent（离线模式）:', tempMainAgent);
     }
-  }, [dispatch, agents]);
+  }, [dispatch]);
 
   /**
    * 重命名Agent

@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React from 'react';
 // import { FixedSizeList as List } from 'react-window';
 import MessageBubble from './MessageBubble';
 import type { Message } from '../store/slices/chatSlice';
@@ -13,18 +13,7 @@ interface VirtualizedMessageListProps {
   highlightedMessageId?: string;
 }
 
-interface MessageItemProps {
-  index: number;
-  style: React.CSSProperties;
-  data: {
-    messages: Message[];
-    onCreateBranch?: (messageId: string, topic: string) => void;
-    onCopyMessage?: (content: string) => void;
-    onQuoteMessage?: (content: string) => void;
-    currentAgentTopic?: string;
-    highlightedMessageId?: string;
-  };
-}
+
 
 // const MessageItem: React.FC<MessageItemProps> = ({ index, style, data }) => { // 暂时注释，未使用
 //   const {
